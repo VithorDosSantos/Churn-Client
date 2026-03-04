@@ -476,7 +476,7 @@ Este projeto está licenciado sob a licença MIT. Veja arquivo [LICENSE](LICENSE
 
 **Vithor dos Santos**
 - GitHub: [@VithorDosSantos](https://github.com/VithorDosSantos)
-- LinkedIn: [Vithor dos Santos](https://linkedin.com/in/vithor-dos-santos)
+- LinkedIn: [Vithor dos Santos](https://www.linkedin.com/in/vithor-dos-santos-santa-rosa)
 
 ---
 
@@ -498,5 +498,5 @@ Para dúvidas, problemas ou sugestões:
 
 ---
 
-**Última atualização:** Março 2024  
+**Última atualização:** Março 2026 
 **Status:** ✅ Production Ready
