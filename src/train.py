@@ -225,7 +225,7 @@ class ChurnModelTrainer:
     
     def save_model(self, path: str = 'models', name: str = 'churn_model.pkl') -> None:
         """
-        Salvar o modelo final.
+        Salvar o modelo final e feature names.
         
         Args:
             path (str): Caminho da pasta
@@ -234,7 +234,14 @@ class ChurnModelTrainer:
         os.makedirs(path, exist_ok=True)
         model_path = os.path.join(path, name)
         joblib.dump(self.best_model, model_path)
+        
+        # Salvar feature names
+        feature_names = list(self.X_train.columns)
+        features_path = os.path.join(path, 'feature_names.pkl')
+        joblib.dump(feature_names, features_path)
+        
         print(f"✓ Modelo salvo em '{model_path}'")
+        print(f"✓ Feature names salvos em '{features_path}'")
     
     def get_results_summary(self) -> pd.DataFrame:
         """

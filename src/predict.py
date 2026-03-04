@@ -38,6 +38,14 @@ class ChurnPredictor:
         self.label_encoders = joblib.load('models/label_encoders.pkl')
         self.metadata = joblib.load('models/preprocess_metadata.pkl')
         
+        # Carregar feature names (ordem exata das colunas)
+        feature_names_path = 'models/feature_names.pkl'
+        if os.path.exists(feature_names_path):
+            self.feature_names = joblib.load(feature_names_path)
+        else:
+            # Fallback para compatibilidade com modelos antigos
+            self.feature_names = None
+        
         print("✓ Modelo e transformers carregados com sucesso!")
     
     def predict_single(self, customer_data: Dict) -> Dict:
@@ -132,14 +140,22 @@ class ChurnPredictor:
         if self.metadata['one_hot_cols']:
             df = pd.get_dummies(df, columns=self.metadata['one_hot_cols'], drop_first=True)
         
-        # Garantir que todas as colunas esperadas existem
-        expected_cols = self._get_feature_columns()
-        for col in expected_cols:
-            if col not in df.columns:
-                df[col] = 0
-        
-        # Selecionar apenas as colunas esperadas
-        df = df[expected_cols]
+        # Usar feature names salvas (ordem correta)
+        if self.feature_names:
+            # Garantir que todas as colunas esperadas existem
+            for col in self.feature_names:
+                if col not in df.columns:
+                    df[col] = 0
+            
+            # Selecionar e reordenar colunas na ordem correta
+            df = df[self.feature_names]
+        else:
+            # Fallback para compatibilidade
+            expected_cols = self._get_feature_columns()
+            for col in expected_cols:
+                if col not in df.columns:
+                    df[col] = 0
+            df = df[expected_cols]
         
         # Normalizar com scaler
         df[self.metadata['numeric_cols']] = self.scaler.transform(
