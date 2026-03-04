@@ -54,41 +54,47 @@ predictor: ChurnPredictor = None
 model_loaded: bool = False
 
 
+def load_model_if_needed():
+    """Carrega o modelo se ainda não foi carregado (lazy loading)"""
+    global predictor, model_loaded
+    
+    if model_loaded and predictor is not None:
+        return True
+    
+    try:
+        model_path = 'models/churn_model.pkl'
+        scaler_path = 'models/scaler.pkl'
+        encoders_path = 'models/label_encoders.pkl'
+        
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Modelo não encontrado: {model_path}")
+        if not os.path.exists(scaler_path):
+            raise FileNotFoundError(f"Scaler não encontrado: {scaler_path}")
+        if not os.path.exists(encoders_path):
+            raise FileNotFoundError(f"Encoders não encontrados: {encoders_path}")
+        
+        predictor = ChurnPredictor(model_path=model_path)
+        model_loaded = True
+        logger.info("✅ Modelo carregado com sucesso!")
+        return True
+    
+    except Exception as e:
+        logger.error(f"❌ Erro ao carregar modelo: {e}")
+        model_loaded = False
+        return False
+
+
 @app.on_event("startup")
 async def startup_event():
     """
     Evento de inicialização da API.
     Carrega o modelo e transformers.
     """
-    global predictor, model_loaded
-    
     try:
-        logger.info("Carregando modelo de churn...")
-        
-        # Verificar se arquivos de modelo existem
-        model_path = 'models/churn_model.pkl'
-        scaler_path = 'models/scaler.pkl'
-        encoders_path = 'models/label_encoders.pkl'
-        
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Arquivo de modelo não encontrado: {model_path}")
-        if not os.path.exists(scaler_path):
-            raise FileNotFoundError(f"Arquivo de scaler não encontrado: {scaler_path}")
-        if not os.path.exists(encoders_path):
-            raise FileNotFoundError(f"Arquivo de encoders não encontrado: {encoders_path}")
-        
-        # Carregar preditor
-        predictor = ChurnPredictor(model_path=model_path)
-        model_loaded = True
-        
-        logger.info("✅ Modelo carregado com sucesso!")
-    
-    except FileNotFoundError as e:
-        logger.error(f"❌ Erro ao carregar modelo: {e}")
-        model_loaded = False
-    
+        logger.info("Carregando modelo na inicialização...")
+        load_model_if_needed()
     except Exception as e:
-        logger.error(f"❌ Erro inesperado ao inicializar API: {e}")
+        logger.error(f"Erro durante inicialização: {e}")
         model_loaded = False
 
 
@@ -139,8 +145,8 @@ async def predict(request: CustomerPredictRequest):
     Recebe dados do cliente em JSON e retorna a probabilidade de churn.
     """
     
-    # Verificar se modelo foi carregado
-    if not model_loaded or predictor is None:
+    # Tentar carregar modelo se necessário
+    if not load_model_if_needed():
         logger.error("Tentativa de predição com modelo não carregado")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -176,15 +182,7 @@ async def predict_batch(request: BatchPredictionRequest):
     Recebe lista de clientes em JSON e retorna predições para todos.
     """
     
-    # Verificar se modelo foi carregado
-    if not model_loaded or predictor is None:
-        logger.error("Tentativa de predição batch com modelo não carregado")
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Modelo não foi carregado. Tente novamente mais tarde."
-        )
-    
-    # Validar entrada
+    # Validar entrada primeiro (antes de carregar modelo)
     if not request.customers or len(request.customers) == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -194,7 +192,15 @@ async def predict_batch(request: BatchPredictionRequest):
     if len(request.customers) > 1000:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Máximo de 1000 clientes por requisição"
+            detail=f"Máximo de 1000 clientes por requisição. Recebido: {len(request.customers)}"
+        )
+    
+    # Tentar carregar modelo se necessário
+    if not load_model_if_needed():
+        logger.error("Tentativa de predição batch com modelo não carregado")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Modelo não foi carregado. Tente novamente mais tarde."
         )
     
     try:
