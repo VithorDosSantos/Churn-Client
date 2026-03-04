@@ -227,7 +227,8 @@ class ChurnModelEvaluator:
         recall_scores = []
         
         for threshold in thresholds:
-            y_pred_threshold = (self.y_pred_proba >= threshold).astype(int)\n            \n            precision = precision_score(self.y_test, y_pred_threshold, zero_division=0)
+            y_pred_threshold = (self.y_pred_proba >= threshold).astype(int)
+            precision = precision_score(self.y_test, y_pred_threshold, zero_division=0)
             recall = recall_score(self.y_test, y_pred_threshold, zero_division=0)
             f1 = f1_score(self.y_test, y_pred_threshold, zero_division=0)
             
