@@ -14,34 +14,53 @@ from typing import List, Optional
 class CustomerPredictRequest(BaseModel):
     """Schema para requisição de predição de um cliente."""
     
-    tenure: int = Field(..., ge=0, le=72, description="Meses de contrato (0-72)")
-    MonthlyCharges: float = Field(..., ge=0, le=200, description="Cobrana mensal em $")
-    TotalCharges: float = Field(..., ge=0, description="Cobrana total em $")
-    Contract: str = Field(..., description="Tipo de contrato: Month-to-month, One year, Two year")
-    PaymentMethod: str = Field(..., description="Método de pagamento")
-    InternetService: str = Field(..., description="Tipo de serviço: Fiber optic, DSL, No")
+    # Informações demográficas
     gender: str = Field(..., description="Gênero: Male, Female")
     SeniorCitizen: int = Field(default=0, ge=0, le=1, description="É cidadão sênior? (0 ou 1)")
     Partner: str = Field(..., description="Tem parceiro? Yes ou No")
     Dependents: str = Field(..., description="Tem dependentes? Yes ou No")
+    
+    # Informações de serviço
+    tenure: int = Field(..., ge=0, le=72, description="Meses de contrato (0-72)")
     PhoneService: str = Field(..., description="Tem serviço de telefone? Yes ou No")
+    MultipleLines: str = Field(..., description="Múltiplas linhas: Yes, No, No phone service")
+    InternetService: str = Field(..., description="Tipo de serviço: Fiber optic, DSL, No")
+    OnlineSecurity: str = Field(..., description="Segurança online: Yes, No, No internet service")
+    OnlineBackup: str = Field(..., description="Backup online: Yes, No, No internet service")
+    DeviceProtection: str = Field(..., description="Proteção de dispositivo: Yes, No, No internet service")
+    TechSupport: str = Field(..., description="Suporte técnico: Yes, No, No internet service")
+    StreamingTV: str = Field(..., description="TV streaming: Yes, No, No internet service")
+    StreamingMovies: str = Field(..., description="Filmes streaming: Yes, No, No internet service")
+    
+    # Informações de conta
+    Contract: str = Field(..., description="Tipo de contrato: Month-to-month, One year, Two year")
     PaperlessBilling: str = Field(..., description="Fatura sem papel? Yes ou No")
+    PaymentMethod: str = Field(..., description="Método de pagamento: Electronic check, Mailed check, Bank transfer (automatic), Credit card (automatic)")
+    MonthlyCharges: float = Field(..., ge=0, le=200, description="Cobrança mensal em $")
+    TotalCharges: float = Field(..., ge=0, description="Cobrança total em $")
     
     class Config:
         json_schema_extra = {
             "example": {
-                "tenure": 12,
-                "MonthlyCharges": 65.5,
-                "TotalCharges": 786.0,
-                "Contract": "Month-to-month",
-                "PaymentMethod": "Electronic check",
-                "InternetService": "Fiber optic",
                 "gender": "Male",
                 "SeniorCitizen": 0,
                 "Partner": "Yes",
                 "Dependents": "No",
+                "tenure": 12,
                 "PhoneService": "Yes",
-                "PaperlessBilling": "Yes"
+                "MultipleLines": "No",
+                "InternetService": "Fiber optic",
+                "OnlineSecurity": "No",
+                "OnlineBackup": "No",
+                "DeviceProtection": "No",
+                "TechSupport": "No",
+                "StreamingTV": "Yes",
+                "StreamingMovies": "Yes",
+                "Contract": "Month-to-month",
+                "PaperlessBilling": "Yes",
+                "PaymentMethod": "Electronic check",
+                "MonthlyCharges": 85.5,
+                "TotalCharges": 1026.0
             }
         }
 

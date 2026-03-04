@@ -73,36 +73,50 @@ class TestPredictEndpoint:
     def valid_customer_data(self):
         """Fixture com dados válidos de cliente."""
         return {
-            "tenure": 12,
-            "MonthlyCharges": 65.5,
-            "TotalCharges": 786.0,
-            "Contract": "Month-to-month",
-            "PaymentMethod": "Electronic check",
-            "InternetService": "Fiber optic",
             "gender": "Male",
             "SeniorCitizen": 0,
             "Partner": "Yes",
             "Dependents": "No",
+            "tenure": 12,
             "PhoneService": "Yes",
-            "PaperlessBilling": "Yes"
+            "MultipleLines": "No",
+            "InternetService": "Fiber optic",
+            "OnlineSecurity": "No",
+            "OnlineBackup": "No",
+            "DeviceProtection": "No",
+            "TechSupport": "No",
+            "StreamingTV": "No",
+            "StreamingMovies": "No",
+            "Contract": "Month-to-month",
+            "PaperlessBilling": "Yes",
+            "PaymentMethod": "Electronic check",
+            "MonthlyCharges": 65.5,
+            "TotalCharges": 786.0
         }
     
     @pytest.fixture
     def high_risk_customer(self):
         """Fixture com dados de cliente de alto risco."""
         return {
-            "tenure": 2,
-            "MonthlyCharges": 95.0,
-            "TotalCharges": 190.0,
-            "Contract": "Month-to-month",
-            "PaymentMethod": "Electronic check",
-            "InternetService": "Fiber optic",
             "gender": "Male",
             "SeniorCitizen": 1,
             "Partner": "No",
             "Dependents": "No",
+            "tenure": 2,
             "PhoneService": "Yes",
-            "PaperlessBilling": "No"
+            "MultipleLines": "No",
+            "InternetService": "Fiber optic",
+            "OnlineSecurity": "No",
+            "OnlineBackup": "No",
+            "DeviceProtection": "No",
+            "TechSupport": "No",
+            "StreamingTV": "No",
+            "StreamingMovies": "No",
+            "Contract": "Month-to-month",
+            "PaperlessBilling": "Yes",
+            "PaymentMethod": "Electronic check",
+            "MonthlyCharges": 95.0,
+            "TotalCharges": 190.0
         }
     
     def test_predict_valid_input(self, valid_customer_data):
@@ -260,18 +274,25 @@ class TestBatchPredictEndpoint:
         customers = []
         for i in range(1001):
             customers.append({
-                "tenure": 12,
-                "MonthlyCharges": 65.5,
-                "TotalCharges": 786.0,
-                "Contract": "Month-to-month",
-                "PaymentMethod": "Electronic check",
-                "InternetService": "Fiber optic",
                 "gender": "Male",
                 "SeniorCitizen": 0,
                 "Partner": "Yes",
                 "Dependents": "No",
+                "tenure": 12,
                 "PhoneService": "Yes",
-                "PaperlessBilling": "Yes"
+                "MultipleLines": "No",
+                "InternetService": "Fiber optic",
+                "OnlineSecurity": "No",
+                "OnlineBackup": "No",
+                "DeviceProtection": "No",
+                "TechSupport": "No",
+                "StreamingTV": "No",
+                "StreamingMovies": "No",
+                "Contract": "Month-to-month",
+                "PaperlessBilling": "Yes",
+                "PaymentMethod": "Electronic check",
+                "MonthlyCharges": 65.5,
+                "TotalCharges": 786.0
             })
         
         data = {"customers": customers}
